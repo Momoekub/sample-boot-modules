@@ -1,4 +1,4 @@
-package th.mfu;
+package th.mfu.jackson;
 
 import java.io.IOException;
 import java.time.LocalDate;

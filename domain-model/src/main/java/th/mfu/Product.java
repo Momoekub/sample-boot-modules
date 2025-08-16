@@ -11,10 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 @Entity
 public class Product {
 
@@ -27,11 +23,9 @@ public class Product {
     private LocalDate manufactureDate;
 
     @OneToMany(mappedBy = "product")
-    @JsonIgnore
     private List<SaleOrderItem> saleOrderItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<ProductReview> reviews = new ArrayList<>();
     public Integer getId() {
         return id;
@@ -57,8 +51,7 @@ public class Product {
     public void setDescription(String description) {
         this.description = description;
     }
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+
     public LocalDate getManufactureDate() {
         return manufactureDate;
     }
