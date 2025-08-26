@@ -8,6 +8,13 @@
             "type": "java",
             "name": "App",
             "request": "launch",
+            "mainClass": "th.camt.App",
+            "projectName": "web-service"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
             "mainClass": "th.mfu.App",
             "projectName": "web-service"
         },

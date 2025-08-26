@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แสดงข้อมูลจาก API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .button-group {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .button-group button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-group button:hover {
+            background-color: #0056b3;
+        }
+
+        .data-display {
+            display: none;
+        }
+        
+        .data-display.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        .loading-text, .error-text {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .error-text {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ข้อมูลจาก API</h1>
+        <div class="button-group">
+            <button onclick="fetchAndShow('students')">ดูนักเรียน</button>
+            <button onclick="fetchAndShow('teachers')">ดูครู</button>
+            <button onclick="fetchAndShow('schools')">ดูโรงเรียน</button>
+            <button onclick="fetchAndShow('courses')">ดูหลักสูตร</button>
+        </div>
+
+        <div id="data-container">
+            <p class="loading-text">กรุณาคลิกปุ่มเพื่อดูข้อมูล</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+        
+        const entityConfig = {
+            students: {
+                api: 'students',
+                headers: ['ชื่อนักเรียน', 'รหัสนักเรียน'],
+                fields: ['name', 'studentId']
+            },
+            teachers: {
+                api: 'teachers',
+                headers: ['ชื่อครู', 'วิชาที่สอน'],
+                fields: ['name', 'subject']
+            },
+            schools: {
+                api: 'schools',
+                headers: ['ชื่อโรงเรียน', 'ที่ตั้ง'],
+                fields: ['name', 'location']
+            },
+            courses: {
+                api: 'courses',
+                headers: ['ชื่อหลักสูตร', 'หน่วยกิต'],
+                fields: ['name', 'credits']
+            }
+        };
+
+        async function fetchAndShow(entityName) {
+            const container = document.getElementById('data-container');
+            container.innerHTML = `<p class="loading-text">กำลังโหลดข้อมูล...</p>`;
+
+            const config = entityConfig[entityName];
+            if (!config) {
+                container.innerHTML = `<p class="error-text">Entity นี้ไม่มีในระบบ</p>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/${config.api}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    container.innerHTML = `<p class="loading-text">ไม่พบข้อมูลสำหรับ ${config.api}</p>`;
+                    return;
+                }
+
+                renderTable(container, data, config.headers, config.fields);
+
+            } catch (error) {
+                console.error('Fetch error:', error);
+                container.innerHTML = `<p class="error-text">ไม่สามารถดึงข้อมูลได้ โปรดตรวจสอบ Console</p>`;
+            }
+        }
+
+        function renderTable(container, data, headers, fields) {
+            let tableHTML = '<table><thead><tr>';
+            headers.forEach(header => {
+                tableHTML += `<th>${header}</th>`;
+            });
+            tableHTML += '</tr></thead><tbody>';
+
+            data.forEach(item => {
+                tableHTML += '<tr>';
+                fields.forEach(field => {
+                    tableHTML += `<td>${item[field]}</td>`;
+                });
+                tableHTML += '</tr>';
+            });
+
+            tableHTML += '</tbody></table>';
+            container.innerHTML = tableHTML;
+            //dfpsdkp
+        }
+    </script>
+</body>
+</html> 
